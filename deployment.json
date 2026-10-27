@@ -1,0 +1,16 @@
+{
+  "addOns": {
+    "common": {
+      "name": "Name Wheel",
+      "logoUrl": "https://j0ntz.github.io/meet-name-wheel/logo.png"
+    },
+    "meet": {
+      "web": {
+        "sidePanelUrl": "https://j0ntz.github.io/meet-name-wheel/sidepanel.html",
+        "supportsScreenSharing": true,
+        "addOnOrigins": ["https://j0ntz.github.io"],
+        "logoUrl": "https://j0ntz.github.io/meet-name-wheel/logo.png"
+      }
+    }
+  }
+}

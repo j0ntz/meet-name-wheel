@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Name Wheel</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://www.gstatic.com/meetjs/addons/1.1.0/meet.addons.js"></script>
+</head>
+<body>
+  <main class="panel">
+    <h1>Name Wheel</h1>
+    <label for="names">Names, one per line</label>
+    <textarea id="names"></textarea>
+    <label class="row"><input type="checkbox" id="removeWinner"> Remove the winner after each spin</label>
+    <canvas id="wheel" class="small"></canvas>
+    <div id="winner" class="winner"></div>
+    <div class="row">
+      <button id="spin">Spin here</button>
+      <button id="spinAll" class="primary">Spin for everyone</button>
+    </div>
+    <div id="status" class="status"></div>
+  </main>
+  <script type="module" src="sidepanel.js"></script>
+</body>
+</html>
