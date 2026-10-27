@@ -1,17 +1,45 @@
 :root { color-scheme: light; font-family: "Google Sans", Roboto, Arial, sans-serif; color: #202124; }
 * { box-sizing: border-box; }
 body { margin: 0; background: #fff; }
-.panel { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
 h1 { font-size: 18px; margin: 0; font-weight: 500; }
+header { display: flex; align-items: center; justify-content: space-between; }
 label { font-size: 13px; color: #5f6368; }
-textarea { width: 100%; min-height: 110px; font: inherit; font-size: 14px; padding: 8px; border: 1px solid #dadce0; border-radius: 8px; resize: vertical; }
 .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 button { font: inherit; font-size: 14px; font-weight: 500; border-radius: 18px; padding: 8px 16px; border: 1px solid #dadce0; background: #fff; color: #1a73e8; cursor: pointer; }
-button.primary { background: #1a73e8; color: #fff; border-color: #1a73e8; }
+button.primary { background: #1a73e8; color: #fff; border-color: #1a73e8; padding: 8px 28px; }
+button.icon { border: none; padding: 4px 8px; font-size: 18px; }
 button:disabled { opacity: 0.5; cursor: default; }
-canvas.small { width: 100%; aspect-ratio: 1; max-width: 320px; align-self: center; }
+
+.app { display: flex; flex-direction: column; gap: 12px; padding: 12px 16px; }
+.controls { display: flex; flex-direction: column; gap: 10px; }
+.people { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.person { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 4px 2px; border-radius: 12px; color: #5f6368; border: 2px solid transparent; background: #f1f3f4; font-size: 12px; }
+.person img { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; filter: grayscale(1); opacity: 0.55; transition: filter 0.15s, opacity 0.15s; }
+.person.selected { background: #e8f0fe; border-color: #1a73e8; color: #174ea6; }
+.person.selected img { filter: none; opacity: 1; }
+.person:disabled { opacity: 1; }
+
+.stage-area { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.wheel-wrap { position: relative; width: 100%; max-width: 340px; aspect-ratio: 1; }
+.wheel-wrap canvas { width: 100%; height: 100%; display: block; }
 .winner { font-size: 20px; font-weight: 500; text-align: center; min-height: 28px; }
-.status { font-size: 12px; color: #5f6368; }
-.stage { height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; background: #f8f9fa; }
-canvas.big { width: min(80vh, 90vw); height: min(80vh, 90vw); }
-.stage .winner { font-size: 36px; }
+.status { font-size: 12px; color: #5f6368; min-height: 16px; }
+
+.celebration { position: absolute; inset: 12%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; background: rgba(255,255,255,0.94); border-radius: 50%; box-shadow: 0 0 0 6px #fbbc04, 0 8px 40px rgba(0,0,0,0.25); }
+.celebration[hidden] { display: none; }
+.celebration img { width: 48%; aspect-ratio: 1; border-radius: 50%; object-fit: cover; border: 4px solid #fbbc04; }
+.celebration .name { font-size: clamp(18px, 7vw, 44px); font-weight: 700; }
+.celebration .tag { font-size: clamp(12px, 3.5vw, 22px); color: #5f6368; }
+.celebration.show { animation: pop 0.6s cubic-bezier(0.2, 1.6, 0.4, 1) both, glow 1.2s ease-in-out 0.6s infinite alternate; }
+.celebration.show img { animation: wobble 1.2s ease-in-out 0.4s 2; }
+@keyframes pop { from { transform: scale(0.2) rotate(-20deg); opacity: 0; } to { transform: scale(1) rotate(0); opacity: 1; } }
+@keyframes glow { from { box-shadow: 0 0 0 6px #fbbc04, 0 0 20px 4px rgba(251,188,4,0.4); } to { box-shadow: 0 0 0 10px #fbbc04, 0 0 60px 16px rgba(251,188,4,0.7); } }
+@keyframes wobble { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-10deg) scale(1.06); } 75% { transform: rotate(10deg) scale(1.06); } }
+.confetti { position: fixed; inset: 0; width: 100vw; height: 100vh; pointer-events: none; }
+
+/* Main stage: wheel big on the left, controls beside it. */
+.app.mainstage { height: 100vh; flex-direction: row-reverse; align-items: center; justify-content: center; gap: 32px; background: #f8f9fa; }
+.mainstage .controls { width: 300px; }
+.mainstage .wheel-wrap { width: min(82vh, 60vw); max-width: none; }
+.mainstage .winner { font-size: 32px; }
+@media (max-width: 700px) { .app.mainstage { flex-direction: column; height: auto; } .mainstage .wheel-wrap { width: 90vw; } }

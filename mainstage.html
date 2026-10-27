@@ -7,12 +7,33 @@
   <link rel="stylesheet" href="style.css">
   <script src="https://www.gstatic.com/meetjs/addons/1.1.0/meet.addons.js"></script>
 </head>
-<body>
-  <main class="stage">
-    <canvas id="wheel" class="big"></canvas>
-    <div id="winner" class="winner"></div>
-    <div id="status" class="status"></div>
+<body data-surface="mainstage">
+  <main class="app mainstage">
+    <section class="controls">
+      <header>
+        <h1>Name Wheel</h1>
+        <button id="mute" class="icon" type="button"></button>
+      </header>
+      <div id="people" class="people" role="group" aria-label="People on the wheel"></div>
+      <div class="row">
+        <button id="spin" class="primary" type="button">Spin</button>
+        <label class="row"><input type="checkbox" id="removeWinner"> Remove winner after spin</label>
+      </div>
+      <div id="status" class="status"></div>
+    </section>
+    <section class="stage-area">
+      <div class="wheel-wrap">
+        <canvas id="wheel"></canvas>
+        <div id="celebration" class="celebration" hidden>
+          <img alt="">
+          <div class="name"></div>
+          <div class="tag">wins!</div>
+        </div>
+      </div>
+      <div id="winner" class="winner"></div>
+    </section>
   </main>
-  <script type="module" src="mainstage.js"></script>
+  <canvas id="confetti" class="confetti"></canvas>
+  <script type="module" src="app.js"></script>
 </body>
 </html>
