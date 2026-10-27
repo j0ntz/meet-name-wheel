@@ -8,7 +8,7 @@ const RELAY = 'https://ntfy.sh'
 const RETRY_MS = 3000
 
 export function initialState() {
-  return { selected: DEFAULT_SELECTED, removeWinner: false, spin: null, rev: 0, ts: 0, by: '' }
+  return { selected: DEFAULT_SELECTED, spin: null, rev: 0, ts: 0, by: '' }
 }
 
 export function isNewer(a, b) {
@@ -25,7 +25,6 @@ export function sanitize(raw) {
   if (!Array.isArray(raw.selected)) return undefined
   const state = {
     selected: inRosterOrder(raw.selected.filter(name => ROSTER_NAMES.includes(name))),
-    removeWinner: raw.removeWinner === true,
     spin: null,
     rev,
     ts,

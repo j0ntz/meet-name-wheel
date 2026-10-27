@@ -24,7 +24,6 @@ const CELEBRATE_MS = 5000
 const surface = document.body.dataset.surface
 const peopleList = document.getElementById('people')
 const spinButton = document.getElementById('spin')
-const removeWinner = document.getElementById('removeWinner')
 const muteButton = document.getElementById('mute')
 const statusText = document.getElementById('status')
 const winnerText = document.getElementById('winner')
@@ -69,7 +68,6 @@ for (const person of ROSTER) {
 }
 
 spinButton.addEventListener('click', spin)
-removeWinner.addEventListener('change', () => store.update({ removeWinner: removeWinner.checked }))
 // While audio is blocked the button reads "Tap for sound": that tap only
 // unlocks audio (the gesture listener does it) and must not also mute.
 const noteUnlockTap = () => (unlockTap = isAudioBlocked())
@@ -99,11 +97,7 @@ function spin() {
   const names = state.selected
   if (animation != null || names.length === 0) return
   const seed = newSeed()
-  const winnerName = names[planSpin(seed, names.length).winner]
-  store.update({
-    spin: { id: crypto.randomUUID(), seed, at: Date.now(), rev: state.rev + 1, names },
-    selected: state.removeWinner ? names.filter(name => name !== winnerName) : names
-  })
+  store.update({ spin: { id: crypto.randomUUID(), seed, at: Date.now(), rev: state.rev + 1, names } })
   startActivity()
 }
 
@@ -134,15 +128,14 @@ function render(state, { live }) {
       winnerText.textContent = `Last winner: ${winner}`
     }
   }
-  removeWinner.checked = state.removeWinner
   renderPeople()
   if (animation == null) drawIdle()
 }
 
 function renderPeople() {
   const state = store.state
-  // While a spin plays, show who was on the wheel, so a removed winner does not
-  // vanish before the wheel stops.
+  // While a spin plays, show who is on the wheel, even if a selection change
+  // arrives before it stops.
   const selected = new Set(animation != null ? animation.names : state.selected)
   for (const [name, button] of buttons) {
     const on = selected.has(name)
@@ -151,7 +144,6 @@ function renderPeople() {
     button.disabled = animation != null
   }
   spinButton.disabled = animation != null || state.selected.length === 0
-  removeWinner.disabled = animation != null
 }
 
 // At rest the wheel shows the last spin's result until anyone changes the
