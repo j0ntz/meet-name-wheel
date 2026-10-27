@@ -23,7 +23,7 @@ const CELEBRATE_MS = 5000
 
 const surface = document.body.dataset.surface
 const peopleList = document.getElementById('people')
-const spinButton = document.getElementById('spin')
+const spinTarget = document.getElementById('spin')
 const muteButton = document.getElementById('mute')
 const statusText = document.getElementById('status')
 const winnerText = document.getElementById('winner')
@@ -67,7 +67,13 @@ for (const person of ROSTER) {
   buttons.set(person.name, button)
 }
 
-spinButton.addEventListener('click', spin)
+// The whole wheel is the spin control.
+spinTarget.addEventListener('click', spin)
+spinTarget.addEventListener('keydown', event => {
+  if (event.key !== 'Enter' && event.key !== ' ') return
+  event.preventDefault()
+  spin()
+})
 // While audio is blocked the button reads "Tap for sound": that tap only
 // unlocks audio (the gesture listener does it) and must not also mute.
 const noteUnlockTap = () => (unlockTap = isAudioBlocked())
@@ -108,7 +114,7 @@ async function startActivity() {
   activityStarted = true
   try {
     await sidePanelClient.startActivity({ mainStageUrl })
-    meetStatus = 'Wheel is on the main stage; others can join from the invite.'
+    meetStatus = ''
   } catch (error) {
     activityStarted = false
     meetStatus = `Could not start the shared activity: ${error.message}`
@@ -122,11 +128,7 @@ function render(state, { live }) {
     shownSpinId = spinState.id
     const fresh = live && Math.abs(Date.now() - spinState.at) < FRESH_SPIN_MS
     if (fresh) playSpin(spinState)
-    else {
-      cancelAnimation()
-      const winner = spinState.names[planSpin(spinState.seed, spinState.names.length).winner]
-      winnerText.textContent = `Last winner: ${winner}`
-    }
+    else cancelAnimation()
   }
   renderPeople()
   if (animation == null) drawIdle()
@@ -143,7 +145,9 @@ function renderPeople() {
     button.setAttribute('aria-pressed', String(on))
     button.disabled = animation != null
   }
-  spinButton.disabled = animation != null || state.selected.length === 0
+  const canSpin = animation == null && state.selected.length > 0
+  spinTarget.classList.toggle('disabled', !canSpin)
+  spinTarget.setAttribute('aria-disabled', String(!canSpin))
 }
 
 // At rest the wheel shows the last spin's result until anyone changes the
@@ -219,8 +223,9 @@ function renderMute() {
       : 'Sound on for you'
 }
 
+// The status line stays empty while things work and only reports problems.
 function showStatus() {
-  const sync = syncStatus === 'synced' ? 'Synced with everyone in this call.' : `Sync: ${syncStatus}.`
+  const sync = syncStatus === 'synced' || syncStatus === 'connecting' ? '' : `Sync: ${syncStatus}.`
   statusText.textContent = [sync, meetStatus].filter(text => text !== '').join(' ')
 }
 
@@ -228,7 +233,6 @@ async function connect() {
   if (!inMeet()) {
     // Standalone preview: ?room=<name> shares state between local tabs.
     const room = new URLSearchParams(window.location.search).get('room') ?? 'preview'
-    meetStatus = `Preview room "${room}".`
     await store.connect(`preview:${room}`)
     showStatus()
     return

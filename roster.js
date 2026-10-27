@@ -1,5 +1,5 @@
-// Participants offered on the wheel. Avatars and winner sounds come from the
-// hudl Plinko game (Slack profile images, per-name clips on the Edge content space).
+// Participants offered on the wheel. Avatars come from the hudl Plinko game
+// (Slack profile images); winner clips live on the Edge content space.
 
 const SOUND_BASE = 'https://nyc3.digitaloceanspaces.com/edgecontent/UI4/hudl'
 
@@ -11,14 +11,16 @@ export const ROSTER = [
   { name: 'Cache', avatar: 'https://ca.slack-edge.com/T08U86VNU-UJTV9CALF-1f9a6157e910-512' },
   { name: 'Fari', avatar: 'https://ca.slack-edge.com/T08U86VNU-U04T9PY41P1-d15c814fd4e2-512' },
   { name: 'Daniel', avatar: 'https://ca.slack-edge.com/T08U86VNU-U04UZ5RR5RU-6b08814bab5f-512' },
-  { name: 'RJ', avatar: 'https://ca.slack-edge.com/T08U86VNU-U0990R1S6-b47fdae676a6-192' }
+  { name: 'RJ', avatar: 'https://ca.slack-edge.com/T08U86VNU-U0990R1S6-b47fdae676a6-192' },
+  { name: 'Shimmy', avatar: 'https://ca.slack-edge.com/T08U86VNU-U08J7A4HL20-969440ad060f-512' }
 ]
 
 export const ROSTER_NAMES = ROSTER.map(person => person.name)
 export const DEFAULT_SELECTED = ROSTER_NAMES.filter(name => name !== 'Paul')
 
+// Each name's clip is <lowercase name>.mp3 under SOUND_BASE.
 export function winnerSoundUrl(name) {
-  return `${SOUND_BASE}/${name.toLowerCase()}.wav`
+  return `${SOUND_BASE}/${name.toLowerCase()}.mp3`
 }
 
 // Keeps a list of names in roster order and drops anything not on the roster.
