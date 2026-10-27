@@ -3,7 +3,17 @@
 // winner; only sound (mute) is per viewer.
 
 import { CLOUD_PROJECT_NUMBER } from './config.js'
-import { confetti, isMuted, playSpinStart, playTick, playWinner, setMuted, unlockAudioOnGesture } from './fx.js'
+import {
+  confetti,
+  isAudioBlocked,
+  isMuted,
+  onAudioBlocked,
+  playSpinStart,
+  playTick,
+  playWinner,
+  setMuted,
+  unlockAudioOnGesture
+} from './fx.js'
 import { ROSTER, inRosterOrder } from './roster.js'
 import { createClientId, createStore } from './sync.js'
 import { SPIN_MS, animateSpin, createSession, drawWheel, inMeet, newSeed, planSpin } from './wheel.js'
@@ -30,6 +40,7 @@ let shownSpinId
 let celebrationTimer
 let syncStatus = 'connecting'
 let meetStatus = ''
+let unlockTap = false
 
 const store = createStore({
   clientId: createClientId(),
@@ -59,10 +70,17 @@ for (const person of ROSTER) {
 
 spinButton.addEventListener('click', spin)
 removeWinner.addEventListener('change', () => store.update({ removeWinner: removeWinner.checked }))
+// While audio is blocked the button reads "Tap for sound": that tap only
+// unlocks audio (the gesture listener does it) and must not also mute.
+const noteUnlockTap = () => (unlockTap = isAudioBlocked())
+muteButton.addEventListener('pointerdown', noteUnlockTap)
+muteButton.addEventListener('keydown', noteUnlockTap)
 muteButton.addEventListener('click', () => {
-  setMuted(!isMuted())
+  if (!unlockTap) setMuted(!isMuted())
+  unlockTap = false
   renderMute()
 })
+onAudioBlocked(renderMute)
 window.addEventListener('resize', () => drawIdle())
 unlockAudioOnGesture()
 renderMute()
@@ -199,8 +217,14 @@ function hideCelebration() {
 }
 
 function renderMute() {
-  muteButton.textContent = isMuted() ? '🔇' : '🔊'
-  muteButton.title = isMuted() ? 'Sound off for you' : 'Sound on for you'
+  const blocked = isAudioBlocked() && !isMuted()
+  muteButton.classList.toggle('blocked', blocked)
+  muteButton.textContent = blocked ? '🔈 Tap for sound' : isMuted() ? '🔇' : '🔊'
+  muteButton.title = blocked
+    ? 'Your browser blocked sound until you tap this panel'
+    : isMuted()
+      ? 'Sound off for you'
+      : 'Sound on for you'
 }
 
 function showStatus() {

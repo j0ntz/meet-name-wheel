@@ -8,6 +8,7 @@ label { font-size: 13px; color: #5f6368; }
 button { font: inherit; font-size: 14px; font-weight: 500; border-radius: 18px; padding: 8px 16px; border: 1px solid #dadce0; background: #fff; color: #1a73e8; cursor: pointer; }
 button.primary { background: #1a73e8; color: #fff; border-color: #1a73e8; padding: 8px 28px; }
 button.icon { border: none; padding: 4px 8px; font-size: 18px; }
+button.icon.blocked { font-size: 13px; background: #fef7e0; color: #b06000; border-radius: 16px; }
 button:disabled { opacity: 0.5; cursor: default; }
 
 .app { display: flex; flex-direction: column; gap: 12px; padding: 12px 16px; }

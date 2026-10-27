@@ -8,6 +8,8 @@ const FANFARE = [523.25, 659.25, 783.99, 1046.5] // C5, E5, G5, C6
 
 let audio
 let muted = readMuted()
+let blocked = false
+let onBlockedChange
 
 function context() {
   if (audio == null) {
@@ -16,9 +18,26 @@ function context() {
     } catch (error) {
       return undefined
     }
+    audio.addEventListener('statechange', () => setBlocked(audio.state !== 'running'))
   }
   if (audio.state === 'suspended') audio.resume().catch(() => {})
   return audio
+}
+
+function setBlocked(value) {
+  if (blocked === value) return
+  blocked = value
+  onBlockedChange?.(blocked)
+}
+
+// True after a sound was dropped because this frame has no user activation
+// yet (a spin started by someone else, before this viewer touched the panel).
+export function isAudioBlocked() {
+  return blocked
+}
+
+export function onAudioBlocked(callback) {
+  onBlockedChange = callback
 }
 
 // Browsers keep audio locked until the viewer interacts with this frame.
@@ -47,9 +66,20 @@ function readMuted() {
   }
 }
 
+// The context, or undefined (and flagged) while the browser holds it suspended.
+function audible() {
+  const ctx = context()
+  if (ctx == null) return undefined
+  if (ctx.state !== 'running') {
+    setBlocked(true)
+    return undefined
+  }
+  return ctx
+}
+
 function tone(frequency, duration, type = 'sine', gain = 0.25, delay = 0) {
   if (muted) return
-  const ctx = context()
+  const ctx = audible()
   if (ctx == null) return
   const start = ctx.currentTime + delay
   const oscillator = ctx.createOscillator()
@@ -71,7 +101,7 @@ export function playTick() {
 
 export function playSpinStart() {
   if (muted) return
-  const ctx = context()
+  const ctx = audible()
   if (ctx == null) return
   const oscillator = ctx.createOscillator()
   const envelope = ctx.createGain()
@@ -98,7 +128,13 @@ export function playWinner(name) {
   playFanfare()
   const clip = new Audio(winnerSoundUrl(name))
   clip.volume = 0.8
-  setTimeout(() => clip.play().catch(() => {}), 450)
+  setTimeout(
+    () =>
+      clip.play().catch(error => {
+        if (error.name === 'NotAllowedError') setBlocked(true)
+      }),
+    450
+  )
 }
 
 // Confetti burst over the whole frame.
