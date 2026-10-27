@@ -182,9 +182,18 @@ export function animateSpin(canvas, names, seed, { offsetMs = 0, onTick, onImage
   const startTime = performance.now() - offsetMs
   let cancelled = false
   let lastSegment
+  let finished = false
   const done = new Promise(resolve => {
+    // Browsers pause animation frames in hidden tabs; the timer still ends the
+    // spin on time there, so the winner shows up with everyone else's.
+    const fallback = setTimeout(() => frame(performance.now()), SPIN_MS - offsetMs + 100)
     const frame = now => {
-      if (cancelled) return resolve(undefined)
+      if (finished) return
+      if (cancelled) {
+        finished = true
+        clearTimeout(fallback)
+        return resolve(undefined)
+      }
       const t = Math.min(1, (now - startTime) / SPIN_MS)
       const eased = 1 - Math.pow(1 - t, 4)
       const angle = rotation * eased
@@ -192,8 +201,10 @@ export function animateSpin(canvas, names, seed, { offsetMs = 0, onTick, onImage
       const segment = segmentAtPointer(angle, names.length)
       if (lastSegment != null && segment !== lastSegment) onTick?.()
       lastSegment = segment
-      if (t < 1) requestAnimationFrame(frame)
-      else resolve(winner)
+      if (t < 1) return requestAnimationFrame(frame)
+      finished = true
+      clearTimeout(fallback)
+      resolve(winner)
     }
     requestAnimationFrame(frame)
   })
