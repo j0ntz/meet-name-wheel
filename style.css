@@ -23,6 +23,8 @@ button:disabled { opacity: 0.5; cursor: default; }
 .wheel-wrap.disabled { cursor: default; }
 .wheel-wrap:focus-visible { outline: 3px solid #1a73e8; outline-offset: 4px; }
 .status:empty { display: none; }
+.sound-hint { font-size: 12px; color: #5f6368; }
+.sound-hint[hidden] { display: none; }
 .winner { font-size: 20px; font-weight: 500; text-align: center; min-height: 28px; }
 .status { font-size: 12px; color: #5f6368; min-height: 16px; }
 

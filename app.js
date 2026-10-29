@@ -63,7 +63,7 @@ spinTarget.addEventListener('keydown', event => {
   spin()
 })
 window.addEventListener('resize', () => drawIdle())
-unlockAudioOnGesture()
+unlockAudioOnGesture(document.getElementById('sound-hint'))
 render(store.state, { live: false })
 
 function togglePerson(name) {

@@ -19,9 +19,19 @@ function context() {
   return audio
 }
 
-// Browsers keep audio locked until the viewer interacts with this frame.
-export function unlockAudioOnGesture() {
-  const unlock = () => context()
+// Browsers keep audio locked until the viewer interacts with this frame, and
+// Meet does not let add-on frames autoplay. The hint shows while it is locked.
+export function unlockAudioOnGesture(hint) {
+  const ctx = context()
+  const sync = () => {
+    if (hint != null) hint.hidden = ctx == null || ctx.state === 'running'
+  }
+  sync()
+  ctx?.addEventListener('statechange', sync)
+  const unlock = () => {
+    context()
+    if (hint != null) hint.hidden = true
+  }
   window.addEventListener('pointerdown', unlock, { capture: true })
   window.addEventListener('keydown', unlock, { capture: true })
 }
