@@ -1,19 +1,9 @@
 // One controller for both Meet surfaces. Everything on screen is rendered from
 // the shared store, so every participant sees the same selection, spin, and
-// winner; only sound (mute) is per viewer.
+// winner. Sound is always on.
 
 import { CLOUD_PROJECT_NUMBER } from './config.js'
-import {
-  confetti,
-  isAudioBlocked,
-  isMuted,
-  onAudioBlocked,
-  playSpinStart,
-  playTick,
-  playWinner,
-  setMuted,
-  unlockAudioOnGesture
-} from './fx.js'
+import { confetti, playSpinStart, playTick, playWinner, unlockAudioOnGesture } from './fx.js'
 import { ROSTER, inRosterOrder } from './roster.js'
 import { createClientId, createStore } from './sync.js'
 import { SPIN_MS, animateSpin, createSession, drawWheel, inMeet, newSeed, planSpin } from './wheel.js'
@@ -24,7 +14,6 @@ const CELEBRATE_MS = 5000
 const surface = document.body.dataset.surface
 const peopleList = document.getElementById('people')
 const spinTarget = document.getElementById('spin')
-const muteButton = document.getElementById('mute')
 const statusText = document.getElementById('status')
 const winnerText = document.getElementById('winner')
 const canvas = document.getElementById('wheel')
@@ -39,7 +28,6 @@ let shownSpinId
 let celebrationTimer
 let syncStatus = 'connecting'
 let meetStatus = ''
-let unlockTap = false
 
 const store = createStore({
   clientId: createClientId(),
@@ -74,20 +62,8 @@ spinTarget.addEventListener('keydown', event => {
   event.preventDefault()
   spin()
 })
-// While audio is blocked the button reads "Tap for sound": that tap only
-// unlocks audio (the gesture listener does it) and must not also mute.
-const noteUnlockTap = () => (unlockTap = isAudioBlocked())
-muteButton.addEventListener('pointerdown', noteUnlockTap)
-muteButton.addEventListener('keydown', noteUnlockTap)
-muteButton.addEventListener('click', () => {
-  if (!unlockTap) setMuted(!isMuted())
-  unlockTap = false
-  renderMute()
-})
-onAudioBlocked(renderMute)
 window.addEventListener('resize', () => drawIdle())
 unlockAudioOnGesture()
-renderMute()
 render(store.state, { live: false })
 
 function togglePerson(name) {
@@ -210,17 +186,6 @@ function hideCelebration() {
   clearTimeout(celebrationTimer)
   celebration.classList.remove('show')
   celebration.hidden = true
-}
-
-function renderMute() {
-  const blocked = isAudioBlocked() && !isMuted()
-  muteButton.classList.toggle('blocked', blocked)
-  muteButton.textContent = blocked ? '🔈 Tap for sound' : isMuted() ? '🔇' : '🔊'
-  muteButton.title = blocked
-    ? 'Your browser blocked sound until you tap this panel'
-    : isMuted()
-      ? 'Sound off for you'
-      : 'Sound on for you'
 }
 
 // The status line stays empty while things work and only reports problems.
