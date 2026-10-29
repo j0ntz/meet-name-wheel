@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Name Wheel privacy policy</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="policy">
+    <h1>Name Wheel privacy policy</h1>
+    <p>Name Wheel is an internal Google Meet add-on for Edge (edge.app) team calls.</p>
+    <h2>What it reads</h2>
+    <p>The add-on reads the meeting id from the Google Meet add-ons SDK. It does not read your name, email, contacts, calendar, camera, microphone, or any Google account data.</p>
+    <h2>What it sends</h2>
+    <p>To keep the wheel in sync across the call, the add-on sends the list of selected names (from a fixed team roster) and the random seed of each spin to an ntfy.sh topic. The topic name is a hash of the meeting id, so the meeting id itself is not sent. No personal data leaves your browser.</p>
+    <h2>What it stores</h2>
+    <p>Nothing is stored on a server we run. ntfy.sh keeps recent messages on a topic for a short time under its own policy.</p>
+    <h2>Contact</h2>
+    <p>Questions: jon@edge.app. Source: <a href="https://github.com/j0ntz/meet-name-wheel">github.com/j0ntz/meet-name-wheel</a>.</p>
+  </main>
+</body>
+</html>

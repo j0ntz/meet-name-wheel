@@ -44,3 +44,10 @@ button:disabled { opacity: 0.5; cursor: default; }
 .mainstage .wheel-wrap { width: min(82vh, 60vw); max-width: none; }
 .mainstage .winner { font-size: 32px; }
 @media (max-width: 700px) { .app.mainstage { flex-direction: column; height: auto; } .mainstage .wheel-wrap { width: 90vw; } }
+
+main.policy {
+  max-width: 640px;
+  margin: 32px auto;
+  padding: 0 16px;
+  line-height: 1.5;
+}
